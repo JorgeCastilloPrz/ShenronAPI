@@ -4,10 +4,10 @@ import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
 import play.api.Logger
-import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import play.api.mvc._
+import play.api.libs.functional.syntax._
 
 /**
   * @author jorge
@@ -25,13 +25,17 @@ class CharacterController extends Controller {
     ) (CharacterResource.apply _)
 
   def createOrUpdateCharacter = Action(parse.json) { request =>
-    unmarshalJsValue(request) { resource: CharacterResource =>
+    mapToCharacterResource(request) { resource: CharacterResource =>
       val character = Character(name = resource.name,
         description = resource.description,
         photoUrl = resource.photoUrl)
 
       if (alreadyExists(character)) update(character) else create(character)
     }
+  }
+
+  private def alreadyExists(character: Character): Boolean = {
+    characterRepo.find(character.id).nonEmpty
   }
 
   def update(character: Character) = {
@@ -44,15 +48,39 @@ class CharacterController extends Controller {
     Created
   }
 
-  private def alreadyExists(character: Character): Boolean = {
-    characterRepo.find(character.id).nonEmpty
+  def deleteCharacter(id: Long) = Action {
+    characterRepo.delete(id)
+    Ok
   }
 
-  def unmarshalJsValue(request: Request[JsValue])
-                      (block: CharacterResource => Result)
-                      (implicit characterReads: Reads[CharacterResource]): Result =
+  def findCharacterById(id: Long) = Action {
+    val character = characterRepo.find(id)
+    if (character.isDefined) {
+      Ok(Json.toJson(character))
+    } else {
+      NotFound
+    }
+  }
+
+  def findCharacterByName(name: String) = Action {
+    val character = characterRepo.find(name)
+    if (character.isDefined) {
+      Ok(Json.toJson(character))
+    } else {
+      NotFound
+    }
+  }
+
+  def findAllCharacters() = Action {
+    val characters = characterRepo.findAll()
+    Ok(Json.toJson(characters))
+  }
+
+  def mapToCharacterResource(request: Request[JsValue])
+                            (action: CharacterResource => Result)
+                            (implicit characterReads: Reads[CharacterResource]): Result =
     request.body.validate[CharacterResource](characterReads).fold(
-      valid = block,
+      valid = action,
       invalid = e => {
         val error = e.mkString
         Logger.error(error)
