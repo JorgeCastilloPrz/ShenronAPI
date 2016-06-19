@@ -16,7 +16,7 @@ trait CharacterRepositoryComponent {
 
     def create(character: Character): Character
 
-    def update(character: Character)
+    def update(character: Character): Character
 
     def findAll(): List[Character]
 

@@ -1,6 +1,12 @@
 package controller
 
 import main.scala.cake.CharacterRepositoryComponent
+import main.scala.controller.request.resource.CharacterResource
+import model.Character
+import play.api.Logger
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
 import play.api.mvc._
 
 /**
@@ -9,5 +15,48 @@ import play.api.mvc._
   */
 class CharacterController extends Controller {
   self: CharacterRepositoryComponent =>
-  0
+
+  // Reads converters are used to convert from a JsValue to another type. You can combine and nest
+  // Reads to create more complex ones.
+  implicit val characterReads: Reads[CharacterResource] = (
+    (__ \ "name").read[String] and
+      (__ \ "description").read[String] and
+      (__ \ "photoUrl").read[String]
+    ) (CharacterResource.apply _)
+
+  def createOrUpdateCharacter = Action(parse.json) { request =>
+    unmarshalJsValue(request) { resource: CharacterResource =>
+      val character = Character(name = resource.name,
+        description = resource.description,
+        photoUrl = resource.photoUrl)
+
+      if (alreadyExists(character)) update(character) else create(character)
+    }
+  }
+
+  def update(character: Character) = {
+    characterRepo.update(character)
+    Ok
+  }
+
+  def create(character: Character) = {
+    characterRepo.create(character)
+    Created
+  }
+
+  private def alreadyExists(character: Character): Boolean = {
+    characterRepo.find(character.id).nonEmpty
+  }
+
+  def unmarshalJsValue(request: Request[JsValue])
+                      (block: CharacterResource => Result)
+                      (implicit characterReads: Reads[CharacterResource]): Result =
+    request.body.validate[CharacterResource](characterReads).fold(
+      valid = block,
+      invalid = e => {
+        val error = e.mkString
+        Logger.error(error)
+        BadRequest(error)
+      }
+    )
 }
