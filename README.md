@@ -6,7 +6,7 @@ ShenronAPI
 [![Platform](https://img.shields.io/badge/platform-android-green.svg)](http://developer.android.com/index.html)
 
 DragonBall characters rest API written in Scala using Play framework. Just a simple pet project to
-have some fun. Planning to create another project with the frontend using React Native.
+have some fun. Planning to create another project with the frontend using React Native :muscle:.
 
 Developed By
 ------------
