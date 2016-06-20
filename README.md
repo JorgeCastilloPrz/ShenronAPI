@@ -5,6 +5,8 @@ ShenronAPI
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Platform](https://img.shields.io/badge/platform-android-green.svg)](http://developer.android.com/index.html)
 
+![Shenron Image][1]
+
 DragonBall characters rest API written in Scala using Play framework. Just a simple pet project to
 have some fun. Planning to create another project with the frontend using React Native :muscle:.
 
@@ -33,7 +35,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
-[1]: ./art/demoPlain.gif
-[2]: ./art/demoRounded.gif
-[3]: ./art/demoSpikes.gif
-[4]: ./art/demoWaves.gif
+[1]: ./raw/shenron.png
