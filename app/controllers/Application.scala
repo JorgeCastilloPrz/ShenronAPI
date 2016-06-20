@@ -11,6 +11,6 @@ import play.api.mvc.Action
 object Application extends CharacterController with MemoryCharacterRepositoryComponent {
 
   def index = Action {
-    Ok("Your new application is ready.")
+    Ok("ShenronAPI is running!")
   }
 }
