@@ -17,12 +17,15 @@ class CharacterController extends Controller {
   self: CharacterRepositoryComponent =>
 
   // Reads converters are used to convert from a JsValue to another type. You can combine and nest
-  // Reads to create more complex ones.
+  // Reads to create more complex ones. Here I am nesting reads to creating a CharacterResource
+
   implicit val characterReads: Reads[CharacterResource] = (
     (__ \ "name").read[String] and
       (__ \ "description").read[String] and
       (__ \ "photoUrl").read[String]
     ) (CharacterResource.apply _)
+
+  // Write converters are used to convert from any model type to JsValue
 
   implicit val characterWrites = new Writes[Character] {
     override def writes(character: Character): JsValue = {
@@ -69,7 +72,7 @@ class CharacterController extends Controller {
     if (character.isDefined) {
       Ok(Json.toJson(character))
     } else {
-      NotFound
+      NotFound("The character you are looking for is not available in our datebase.")
     }
   }
 
@@ -78,7 +81,7 @@ class CharacterController extends Controller {
     if (character.isDefined) {
       Ok(Json.toJson(character))
     } else {
-      NotFound
+      NotFound("The character you are looking for is not available in our datebase.")
     }
   }
 
