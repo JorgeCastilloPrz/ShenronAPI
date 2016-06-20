@@ -1,13 +1,13 @@
-package controller
+package controllers.character
 
 import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
 import play.api.Logger
+import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import play.api.mvc._
-import play.api.libs.functional.syntax._
 
 /**
   * @author jorge
@@ -23,6 +23,17 @@ class CharacterController extends Controller {
       (__ \ "description").read[String] and
       (__ \ "photoUrl").read[String]
     ) (CharacterResource.apply _)
+
+  implicit val characterWrites = new Writes[Character] {
+    override def writes(character: Character): JsValue = {
+      Json.obj(
+        "id" -> character.id,
+        "name" -> character.name,
+        "description" -> character.description,
+        "photoUrl" -> character.photoUrl
+      )
+    }
+  }
 
   def createOrUpdateCharacter = Action(parse.json) { request =>
     mapToCharacterResource(request) { resource: CharacterResource =>
