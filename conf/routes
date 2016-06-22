@@ -5,15 +5,11 @@
 # Home page
 GET     /                           controllers.Application.index
 POST    /characters/create          controllers.Application.createOrUpdateCharacter
-POST    /characters/create/          controllers.Application.createOrUpdateCharacter
-GET     /characters/id/:id          controllers.Application.findCharacterById(id: Long)
-GET     /characters/id/:id/          controllers.Application.findCharacterById(id: Long)
-GET     /characters/name/:name      controllers.Application.findCharacterByName(name: String)
-GET     /characters/name/:name/      controllers.Application.findCharacterByName(name: String)
+POST    /characters/create/         controllers.Application.createOrUpdateCharacter
+GET     /characters/                controllers.Application.findCharacter(id: Option[Long], name: Option[String])
 GET     /characters/all             controllers.Application.findAllCharacters()
-GET     /characters/all/             controllers.Application.findAllCharacters()
-DELETE  /characters/:id             controllers.Application.deleteCharacter(id: Long)
-DELETE  /characters/:id/             controllers.Application.deleteCharacter(id: Long)
+GET     /characters/all/            controllers.Application.findAllCharacters()
+DELETE  /characters/                controllers.Application.deleteCharacter(id: Option[Long])
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

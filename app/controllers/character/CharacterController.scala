@@ -10,6 +10,9 @@ import play.api.libs.json._
 import play.api.mvc._
 
 /**
+  * Controllers are used as query routers in Play framework. Static methods returning actions are
+  * linked to url paths in order to resolve petitions.
+  *
   * @author jorge
   * @since 19/06/16
   */
@@ -44,12 +47,8 @@ class CharacterController extends Controller {
         description = resource.description,
         photoUrl = resource.photoUrl)
 
-      if (alreadyExists(character)) update(character) else create(character)
+      if (characterRepo.find(character.id).nonEmpty) update(character) else create(character)
     }
-  }
-
-  private def alreadyExists(character: Character): Boolean = {
-    characterRepo.find(character.id).nonEmpty
   }
 
   def update(character: Character) = {
@@ -62,27 +61,38 @@ class CharacterController extends Controller {
     Created
   }
 
-  def deleteCharacter(id: Long) = Action {
-    characterRepo.delete(id)
-    Ok
-  }
-
-  def findCharacterById(id: Long) = Action {
-    val character = characterRepo.find(id)
-    if (character.isDefined) {
-      Ok(Json.toJson(character))
+  def deleteCharacter(id: Option[Long]) = Action {
+    if (id.nonEmpty) {
+      characterRepo.delete(id.get)
+      Ok
     } else {
-      NotFound("The character you are looking for is not available in our datebase.")
+      BadRequest
     }
   }
 
-  def findCharacterByName(name: String) = Action {
-    val character = characterRepo.find(name)
-    if (character.isDefined) {
-      Ok(Json.toJson(character))
-    } else {
-      NotFound("The character you are looking for is not available in our datebase.")
+  def findCharacter(id: Option[Long], name: Option[String]) = Action {
+    request => {
+      if (request.queryString.count(x => x._1 != "id" && x._1 != "name") > 0) BadRequest
+      else if (id.isEmpty && name.isEmpty) BadRequest
+      else if (id.isDefined && name.isDefined)
+        findCharacterWithDoubleCriteria(id.get, name.get)
+      else {
+        val character = if (id.nonEmpty) characterRepo.find(id.get) else characterRepo.find(name.get)
+        if (character.isDefined) {
+          Ok(Json.toJson(character))
+        } else {
+          NotFound("The character you are looking for is not available in our datebase.")
+        }
+      }
     }
+  }
+
+  def findCharacterWithDoubleCriteria(id: Long, name: String) = {
+    val character = characterRepo.find(id);
+    if (character.nonEmpty && character.get.name == name)
+      Ok(Json.toJson(character))
+    else
+      NotFound("There are no characters available matching given conditions.")
   }
 
   def findAllCharacters() = Action {
