@@ -1,6 +1,6 @@
 import controllers.character.CharacterController
-import main.scala.cake.MemoryCharacterRepositoryComponent
 import play.api.mvc.Action
+import repository.DBCharacterRepositoryComponent
 import validator.Oauth2HeaderValidatorComponent
 
 /**
@@ -8,7 +8,7 @@ import validator.Oauth2HeaderValidatorComponent
   * @since 19/06/16
   */
 object Application extends CharacterController
-  with MemoryCharacterRepositoryComponent with Oauth2HeaderValidatorComponent {
+  with DBCharacterRepositoryComponent with Oauth2HeaderValidatorComponent {
 
   def index = Action {
     Ok("ShenronAPI is running!")
