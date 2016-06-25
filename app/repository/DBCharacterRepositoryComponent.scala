@@ -32,14 +32,14 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
 
     override def create(character: Character): Character = {
       val connection = connectToDatabase
-      connection.createStatement.executeQuery(createCharacterQuery(character))
+      connection.createStatement.executeUpdate(createCharacterQuery(character))
       connection.close()
       character
     }
 
     override def update(character: Character): Character = {
       val connection = connectToDatabase
-      connection.createStatement.executeQuery(updateCharacterQuery(character))
+      connection.createStatement.executeUpdate(updateCharacterQuery(character))
       connection.close()
       character
     }
@@ -61,8 +61,23 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
     override def find(id: Long): Option[Character] = {
       val connection = connectToDatabase
       val resultSet = connection.createStatement.executeQuery(findByIdQuery(id))
-      connection.close()
-      None
+
+      if (!resultSet.isBeforeFirst()) {
+        connection.close()
+        None
+      } else {
+        resultSet.next()
+        connection.close()
+        Some(mapCharacterFromResult(resultSet))
+      }
+    }
+
+    def mapCharacterFromResult(resultSet: ResultSet): Character = {
+      new Character(
+        resultSet.getLong("id"),
+        resultSet.getString("name"),
+        resultSet.getString("description"),
+        resultSet.getString("photourl"))
     }
 
     override def find(name: String): Option[Character] = {
@@ -93,7 +108,7 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
     }
 
     def findByIdQuery(id: Long) = {
-      "SELECT FROM characters WHERE id=" + id
+      "SELECT * FROM characters WHERE id=" + id
     }
 
     def findByName(name: String) = {
