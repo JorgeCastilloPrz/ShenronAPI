@@ -54,9 +54,15 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
     override def findAll(): List[Character] = {
       val connection = connectToDatabase
       val resultSet = connection.createStatement.executeQuery(findAllQuery())
-      connection.close()
 
-      List()
+      if (!resultSet.isBeforeFirst) {
+        connection.close()
+        List()
+      } else {
+        val characters = resultSetStream(resultSet).map(result => mapCharacterFromResult(result)).toList
+        connection.close()
+        characters
+      }
     }
 
     override def find(id: Long): Option[Character] = {
@@ -126,13 +132,12 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
       "SELECT * FROM characters WHERE name=\"" + name + "\""
     }
 
-    def resultSetStream(resultSet: ResultSet): Stream[String] = {
-      new Iterator[String] {
+    def resultSetStream(resultSet: ResultSet): Stream[ResultSet] = {
+      new Iterator[ResultSet] {
         def hasNext = resultSet.next()
 
-        def next() = resultSet.getString(1)
+        def next() = resultSet
       }.toStream
     }
   }
-
 }
