@@ -10,6 +10,10 @@ ShenronAPI
 DragonBall characters rest API written in Scala using Play framework. Just a simple pet project to
 have some fun. Planning to create another project with the frontend using React Native :muscle:.
 
+Injection
+---------
+Used simple Cake pattern to provide dependencies statically (compile time).
+
 Developed By
 ------------
 * Jorge Castillo Pérez - <jorge.castillo.prz@gmail.com>

@@ -1,6 +1,5 @@
 package controllers.character
 
-import cake.HeaderValidatorComponent
 import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
@@ -9,6 +8,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import play.api.mvc._
+import validator.HeaderValidatorComponent
 
 /**
   * Controllers are used as query routers in Play framework. Static methods returning actions are

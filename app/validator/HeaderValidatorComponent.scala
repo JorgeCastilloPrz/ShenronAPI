@@ -1,6 +1,6 @@
-package cake
+package validator
 
-import play.api.mvc.{Headers, RequestHeader}
+import play.api.mvc.Headers
 
 /**
   * component to inject HeaderValidator.
