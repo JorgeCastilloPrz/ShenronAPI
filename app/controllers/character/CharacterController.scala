@@ -3,7 +3,6 @@ package controllers.character
 import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
-import play.api.Logger
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
@@ -54,7 +53,9 @@ class CharacterController extends Controller {
               description = resource.description,
               photoUrl = resource.photoUrl)
 
-            if (characterRepo.find(character.id).nonEmpty) update(character) else create(character)
+            if (characterRepo.find(character.id).nonEmpty || characterRepo.find(character.name).nonEmpty)
+              update(character)
+            else create(character)
         }
       }
     }

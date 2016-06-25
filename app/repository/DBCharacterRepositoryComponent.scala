@@ -34,14 +34,14 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
       val connection = connectToDatabase
       connection.createStatement.executeUpdate(createCharacterQuery(character))
       connection.close()
-      character
+      find(character.id).get
     }
 
     override def update(character: Character): Character = {
       val connection = connectToDatabase
       connection.createStatement.executeUpdate(updateCharacterQuery(character))
       connection.close()
-      character
+      find(character.id).getOrElse(find(character.name).get)
     }
 
     override def delete(id: Long) {
@@ -62,13 +62,29 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
       val connection = connectToDatabase
       val resultSet = connection.createStatement.executeQuery(findByIdQuery(id))
 
-      if (!resultSet.isBeforeFirst()) {
+      if (!resultSet.isBeforeFirst) {
         connection.close()
         None
       } else {
         resultSet.next()
+        val character = mapCharacterFromResult(resultSet)
         connection.close()
-        Some(mapCharacterFromResult(resultSet))
+        Some(character)
+      }
+    }
+
+    override def find(name: String): Option[Character] = {
+      val connection = connectToDatabase
+      val resultSet = connection.createStatement.executeQuery(findByNameQuery(name))
+
+      if (!resultSet.isBeforeFirst) {
+        connection.close()
+        None
+      } else {
+        resultSet.next()
+        val character = mapCharacterFromResult(resultSet)
+        connection.close()
+        Some(character)
       }
     }
 
@@ -80,23 +96,17 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
         resultSet.getString("photourl"))
     }
 
-    override def find(name: String): Option[Character] = {
-      val connection = connectToDatabase
-      val resultSet = connection.createStatement.executeQuery(findByName(name))
-      connection.close()
-      None
-    }
-
     private def createCharacterQuery(character: Character): String = {
-      "INSERT INTO characters (name, description, photourl) VALUES " +
-        character.name + ", " + character.description + ", " + character.photoUrl
+      "INSERT INTO characters (name, description, photourl) VALUES (\"" +
+        character.name + "\", \"" + character.description + "\", \"" + character.photoUrl + "\")"
     }
 
     private def updateCharacterQuery(character: Character): String = {
       "UPDATE characters SET " +
-        "name=" + character.name + ", " +
-        "description=" + character.description + ", " +
-        "photourl=" + character.photoUrl + " WHERE id=" + character.id
+        "name='" + character.name + "', " +
+        "description='" + character.description + "', " +
+        "photourl='" + character.photoUrl + "'" +
+        " WHERE id=" + character.id + " OR name='" + character.name + "'"
     }
 
     private def deleteCharacterQuery(id: Long): String = {
@@ -111,8 +121,8 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
       "SELECT * FROM characters WHERE id=" + id
     }
 
-    def findByName(name: String) = {
-      "SELECT FROM characters WHERE name=" + name
+    def findByNameQuery(name: String) = {
+      "SELECT * FROM characters WHERE name=\"" + name + "\""
     }
 
     def resultSetStream(resultSet: ResultSet): Stream[String] = {
