@@ -5,6 +5,7 @@ import java.sql.{Connection, DriverManager, ResultSet}
 import main.scala.cake.CharacterRepositoryComponent
 import model.Character
 import play.api.Play
+import play.api.Play.current
 
 /**
   * Implementation for the CharacterRepository component which provides a memory character
@@ -29,16 +30,18 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
       DriverManager.getConnection(url.get, user.get, password.get)
     }
 
-    override def create(character: Character) {
+    override def create(character: Character): Character = {
       val connection = connectToDatabase
       connection.createStatement.executeQuery(createCharacterQuery(character))
       connection.close()
+      character
     }
 
-    override def update(character: Character) {
+    override def update(character: Character): Character = {
       val connection = connectToDatabase
       connection.createStatement.executeQuery(updateCharacterQuery(character))
       connection.close()
+      character
     }
 
     override def delete(id: Long) {

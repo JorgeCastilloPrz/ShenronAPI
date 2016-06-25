@@ -1,3 +1,5 @@
+package controllers
+
 import controllers.character.CharacterController
 import play.api.mvc.Action
 import repository.DBCharacterRepositoryComponent
