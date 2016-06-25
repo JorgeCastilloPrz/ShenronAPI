@@ -44,10 +44,11 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
       find(character.id).getOrElse(find(character.name).get)
     }
 
-    override def delete(id: Long) {
+    override def delete(id: Long): Boolean = {
       val connection = connectToDatabase
-      connection.createStatement.executeQuery(deleteCharacterQuery(id))
+      val affectedRows = connection.createStatement.executeUpdate(deleteCharacterQuery(id))
       connection.close()
+      affectedRows > 0
     }
 
     override def findAll(): List[Character] = {

@@ -31,8 +31,9 @@ trait MemoryCharacterRepositoryComponent extends CharacterRepositoryComponent {
       characters.put(character.id, character)
     }
 
-    override def delete(id: Long) {
-      characters.remove(id)
+    override def delete(id: Long): Boolean = {
+      val removedCharacter = characters.remove(id)
+      removedCharacter != null
     }
 
     override def findAll(): List[Character] = {

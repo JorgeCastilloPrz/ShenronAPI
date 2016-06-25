@@ -24,7 +24,7 @@ trait CharacterRepositoryComponent {
 
     def find(name: String): Option[Character]
 
-    def delete(id: Long)
+    def delete(id: Long): Boolean
   }
 
 }

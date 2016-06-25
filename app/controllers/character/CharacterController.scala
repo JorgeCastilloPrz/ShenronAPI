@@ -75,8 +75,7 @@ class CharacterController extends Controller {
     request => {
       if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
       else if (id.nonEmpty) {
-        characterRepo.delete(id.get)
-        Ok
+        if (characterRepo.delete(id.get)) Ok else NotFound
       } else {
         BadRequest
       }
