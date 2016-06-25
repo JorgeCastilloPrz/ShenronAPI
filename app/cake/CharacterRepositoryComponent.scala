@@ -3,7 +3,7 @@ package main.scala.cake
 import model.Character
 
 /**
-  * Cake pattern component to inject CharacterRepository.
+  * component to inject CharacterRepository.
   *
   * @author jorge
   * @since 19/06/16

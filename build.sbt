@@ -10,6 +10,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 libraryDependencies ++= Seq(
   jdbc,
+  "mysql" % "mysql-connector-java" % "5.1.18",
   cache,
   ws,
   specs2 % Test

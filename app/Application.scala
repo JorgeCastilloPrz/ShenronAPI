@@ -1,5 +1,3 @@
-package controllers
-
 import controllers.character.CharacterController
 import main.scala.cake.MemoryCharacterRepositoryComponent
 import play.api.mvc.Action

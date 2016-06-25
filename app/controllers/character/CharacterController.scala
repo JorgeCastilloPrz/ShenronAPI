@@ -1,5 +1,6 @@
 package controllers.character
 
+import cake.HeaderValidatorComponent
 import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
@@ -13,11 +14,13 @@ import play.api.mvc._
   * Controllers are used as query routers in Play framework. Static methods returning actions are
   * linked to url paths in order to resolve petitions.
   *
+  * Applied cake pattern to inject CharacterRepository and HeaderValidator
+  *
   * @author jorge
   * @since 19/06/16
   */
 class CharacterController extends Controller {
-  self: CharacterRepositoryComponent =>
+  self: CharacterRepositoryComponent with HeaderValidatorComponent =>
 
   // Reads converters are used to convert from a JsValue to another type. You can combine and nest
   // Reads to create more complex ones. Here I am nesting reads to creating a CharacterResource
@@ -41,13 +44,19 @@ class CharacterController extends Controller {
     }
   }
 
-  def createOrUpdateCharacter = Action(parse.json) { request =>
-    mapToCharacterResource(request) { resource: CharacterResource =>
-      val character = Character(name = resource.name,
-        description = resource.description,
-        photoUrl = resource.photoUrl)
+  def createOrUpdateCharacter = Action(parse.json) {
+    request => {
+      if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
+      else {
+        mapToCharacterResource(request) {
+          resource: CharacterResource =>
+            val character = Character(name = resource.name,
+              description = resource.description,
+              photoUrl = resource.photoUrl)
 
-      if (characterRepo.find(character.id).nonEmpty) update(character) else create(character)
+            if (characterRepo.find(character.id).nonEmpty) update(character) else create(character)
+        }
+      }
     }
   }
 
@@ -62,17 +71,21 @@ class CharacterController extends Controller {
   }
 
   def deleteCharacter(id: Option[Long]) = Action {
-    if (id.nonEmpty) {
-      characterRepo.delete(id.get)
-      Ok
-    } else {
-      BadRequest
+    request => {
+      if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
+      else if (id.nonEmpty) {
+        characterRepo.delete(id.get)
+        Ok
+      } else {
+        BadRequest
+      }
     }
   }
 
   def findCharacter(id: Option[Long], name: Option[String]) = Action {
     request => {
-      if (request.queryString.count(x => x._1 != "id" && x._1 != "name") > 0) BadRequest
+      if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
+      else if (request.queryString.count(x => x._1 != "id" && x._1 != "name") > 0) BadRequest
       else if (id.isEmpty && name.isEmpty) BadRequest
       else if (id.isDefined && name.isDefined)
         findCharacterWithDoubleCriteria(id.get, name.get)
@@ -96,8 +109,13 @@ class CharacterController extends Controller {
   }
 
   def findAllCharacters() = Action {
-    val characters = characterRepo.findAll()
-    Ok(Json.toJson(characters))
+    request => {
+      if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
+      else {
+        val characters = characterRepo.findAll()
+        Ok(Json.toJson(characters))
+      }
+    }
   }
 
   def mapToCharacterResource(request: Request[JsValue])
