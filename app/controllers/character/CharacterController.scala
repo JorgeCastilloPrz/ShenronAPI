@@ -23,7 +23,7 @@ class CharacterController extends Controller {
   self: CharacterRepositoryComponent with HeaderValidatorComponent =>
 
   // Reads converters are used to convert from a JsValue to another type. You can combine and nest
-  // Reads to create more complex ones. Here I am nesting reads to creating a CharacterResource
+  // Reads to create more complex ones. Here I am nesting reads to create a CharacterResource
 
   implicit val characterReads: Reads[CharacterResource] = (
     (__ \ "name").read[String] and
@@ -44,8 +44,8 @@ class CharacterController extends Controller {
     }
   }
 
-  def createOrUpdateCharacter = Action(parse.json) {
-    request => {
+  def createOrUpdateCharacter = Action(BodyParsers.parse.json) {
+    implicit request => {
       if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
       else {
         mapToCharacterResource(request) {
@@ -122,11 +122,9 @@ class CharacterController extends Controller {
                             (action: CharacterResource => Result)
                             (implicit characterReads: Reads[CharacterResource]): Result =
     request.body.validate[CharacterResource](characterReads).fold(
-      valid = action,
-      invalid = e => {
-        val error = e.mkString
-        Logger.error(error)
-        BadRequest(error)
+      errors => BadRequest(Json.obj("errors" -> JsError.toJson(errors))),
+      characterResource => {
+        action.apply(characterResource)
       }
     )
 }
