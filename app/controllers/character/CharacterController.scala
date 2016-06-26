@@ -19,7 +19,7 @@ import validator.HeaderValidatorComponent
   * @author jorge
   * @since 19/06/16
   */
-@BasicAuth()
+@BasicAuth
 class CharacterController extends Controller {
   self: CharacterRepositoryComponent with HeaderValidatorComponent =>
 
