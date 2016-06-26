@@ -8,10 +8,6 @@ ShenronAPI
 DragonBall characters rest API written in Scala using Play framework. Just a simple pet project to
 have some fun. Planning to create another project with the frontend using React Native :muscle:.
 
-Dependency Injection
-====================
-Used cake pattern to provide dependencies statically (compile time).
-
 Usage
 =====
 To call the API endpoints you need to provide **encoded credentials**, as the
