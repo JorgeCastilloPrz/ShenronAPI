@@ -1,8 +1,9 @@
-package main.scala.cake
+package repository.memory
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
+import main.scala.cake.CharacterRepositoryComponent
 import model.Character
 
 /**

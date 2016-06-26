@@ -1,4 +1,4 @@
-package repository
+package repository.database
 
 import java.sql.{Connection, DriverManager, ResultSet}
 
@@ -6,6 +6,7 @@ import main.scala.cake.CharacterRepositoryComponent
 import model.Character
 import play.api.Play
 import play.api.Play.current
+import utils.StreamExtensions
 
 /**
   * Implementation for the CharacterRepository component which provides a memory character
@@ -14,7 +15,8 @@ import play.api.Play.current
   * @author jorge
   * @since 19/06/16
   */
-trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
+trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent
+  with StreamExtensions with CharacterQueryProvider {
 
   override val characterRepo = new DBCharacterRepository
 
@@ -102,42 +104,6 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent {
         resultSet.getString("description"),
         resultSet.getString("photourl"))
     }
-
-    private def createCharacterQuery(character: Character): String = {
-      "INSERT INTO characters (name, description, photourl) VALUES (\"" +
-        character.name + "\", \"" + character.description + "\", \"" + character.photoUrl + "\")"
-    }
-
-    private def updateCharacterQuery(character: Character): String = {
-      "UPDATE characters SET " +
-        "name='" + character.name + "', " +
-        "description='" + character.description + "', " +
-        "photourl='" + character.photoUrl + "'" +
-        " WHERE id=" + character.id + " OR name='" + character.name + "'"
-    }
-
-    private def deleteCharacterQuery(id: Long): String = {
-      "DELETE FROM characters WHERE id=" + id
-    }
-
-    def findAllQuery(): String = {
-      "SELECT * FROM characters"
-    }
-
-    def findByIdQuery(id: Long) = {
-      "SELECT * FROM characters WHERE id=" + id
-    }
-
-    def findByNameQuery(name: String) = {
-      "SELECT * FROM characters WHERE name=\"" + name + "\""
-    }
-
-    def resultSetStream(resultSet: ResultSet): Stream[ResultSet] = {
-      new Iterator[ResultSet] {
-        def hasNext = resultSet.next()
-
-        def next() = resultSet
-      }.toStream
-    }
   }
+
 }
