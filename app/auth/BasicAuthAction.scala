@@ -52,5 +52,5 @@ class BasicAuthAction extends Action[Result] with UserController with DBUserRepo
 private object BasicAuthAction {
   val AUTHORIZATION = "authorization"
   val WWW_AUTHENTICATE = "WWW-Authenticate"
-  val REALM = "Basic realm=\"Your Realm Here\""
+  val REALM = "Basic realm=\"Shenron\""
 }
