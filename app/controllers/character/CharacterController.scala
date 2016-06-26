@@ -1,6 +1,6 @@
 package controllers.character
 
-import auth.BasicAuth
+import auth.{BasicAuth, BasicAuthAction}
 import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
@@ -8,6 +8,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import play.api.mvc._
+import play.mvc.With
 import validator.HeaderValidatorComponent
 
 /**
@@ -19,7 +20,6 @@ import validator.HeaderValidatorComponent
   * @author jorge
   * @since 19/06/16
   */
-@BasicAuth
 class CharacterController extends Controller {
   self: CharacterRepositoryComponent with HeaderValidatorComponent =>
 
@@ -45,7 +45,7 @@ class CharacterController extends Controller {
     }
   }
 
-  def createOrUpdateCharacter = Action(BodyParsers.parse.json) {
+  def createOrUpdateCharacter = BasicAuthAction(BodyParsers.parse.json) {
     implicit request => {
       if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
       else {
@@ -73,7 +73,7 @@ class CharacterController extends Controller {
     Created
   }
 
-  def deleteCharacter(id: Option[Long]) = Action {
+  def deleteCharacter(id: Option[Long]) = BasicAuthAction {
     request => {
       if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
       else if (id.nonEmpty) {
@@ -84,7 +84,7 @@ class CharacterController extends Controller {
     }
   }
 
-  def findCharacter(id: Option[Long], name: Option[String]) = Action {
+  def findCharacter(id: Option[Long], name: Option[String]) = BasicAuthAction {
     request => {
       if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
       else if (request.queryString.count(x => x._1 != "id" && x._1 != "name") > 0) BadRequest
@@ -110,7 +110,7 @@ class CharacterController extends Controller {
       NotFound("There are no characters available matching given conditions.")
   }
 
-  def findAllCharacters() = Action {
+  def findAllCharacters() = BasicAuthAction {
     request => {
       if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
       else {
