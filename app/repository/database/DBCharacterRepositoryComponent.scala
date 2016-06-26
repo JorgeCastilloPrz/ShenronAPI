@@ -1,6 +1,6 @@
 package repository.database
 
-import java.sql.{Connection, DriverManager, ResultSet}
+import java.sql.{Connection, DriverManager}
 
 import main.scala.cake.CharacterRepositoryComponent
 import model.Character
@@ -9,14 +9,14 @@ import play.api.Play.current
 import utils.StreamExtensions
 
 /**
-  * Implementation for the CharacterRepository component which provides a memory character
-  * repository.
+  * Implementation for the CharacterRepository component which provides a persistence character
+  * repo.
   *
   * @author jorge
   * @since 19/06/16
   */
 trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent
-  with StreamExtensions with CharacterQueryProvider {
+  with StreamExtensions with CharacterQueryProvider with CharacterMapper {
 
   override val characterRepo = new DBCharacterRepository
 
@@ -95,14 +95,6 @@ trait DBCharacterRepositoryComponent extends CharacterRepositoryComponent
         connection.close()
         Some(character)
       }
-    }
-
-    def mapCharacterFromResult(resultSet: ResultSet): Character = {
-      new Character(
-        resultSet.getLong("id"),
-        resultSet.getString("name"),
-        resultSet.getString("description"),
-        resultSet.getString("photourl"))
     }
   }
 
