@@ -1,5 +1,6 @@
 package controllers.character
 
+import auth.BasicAuth
 import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
@@ -18,6 +19,7 @@ import validator.HeaderValidatorComponent
   * @author jorge
   * @since 19/06/16
   */
+@BasicAuth()
 class CharacterController extends Controller {
   self: CharacterRepositoryComponent with HeaderValidatorComponent =>
 

@@ -1,6 +1,6 @@
 ShenronAPI
 ==========
-[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Hex.pm](https://img.shields.io/badge/license-apache2-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Platform](https://img.shields.io/badge/platform-scala-green.svg)](http://www.scala-lang.org/)
 
 ![Shenron Image][1]
@@ -11,6 +11,10 @@ have some fun. Planning to create another project with the frontend using React 
 Dependency Injection
 --------------------
 Used cake pattern to provide dependencies statically (compile time).
+
+TODO
+----
+* Deploy to digital ocean VPS so people can start using it.
 
 Developed By
 ------------
