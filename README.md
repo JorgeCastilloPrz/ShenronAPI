@@ -1,6 +1,5 @@
 ShenronAPI
 ==========
-[![Build Status](https://travis-ci.org/JorgeCastilloPrz/ShenronAPI.svg?branch=master)](https://travis-ci.org/JorgeCastilloPrz/ShenronAPI)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Platform](https://img.shields.io/badge/platform-scala-green.svg)](http://www.scala-lang.org/)
 
