@@ -13,6 +13,8 @@ trait UserRepositoryComponent {
   trait UserRepository {
 
     def find(username: String, password: String): Option[User]
+
+    def create(user: User): User
   }
 
 }

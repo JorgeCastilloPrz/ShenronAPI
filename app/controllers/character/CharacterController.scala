@@ -1,6 +1,6 @@
 package controllers.character
 
-import auth.{BasicAuth, BasicAuthAction}
+import auth.BasicAuthAction
 import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
@@ -8,8 +8,6 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import play.api.mvc._
-import play.mvc.With
-import validator.HeaderValidatorComponent
 
 /**
   * Controllers are used as query routers in Play framework. Static methods returning actions are
@@ -21,7 +19,7 @@ import validator.HeaderValidatorComponent
   * @since 19/06/16
   */
 class CharacterController extends Controller {
-  self: CharacterRepositoryComponent with HeaderValidatorComponent =>
+  self: CharacterRepositoryComponent =>
 
   // Reads converters are used to convert from a JsValue to another type. You can combine and nest
   // Reads to create more complex ones. Here I am nesting reads to create a CharacterResource
@@ -47,18 +45,15 @@ class CharacterController extends Controller {
 
   def createOrUpdateCharacter = BasicAuthAction(BodyParsers.parse.json) {
     implicit request => {
-      if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
-      else {
-        mapToCharacterResource(request) {
-          resource: CharacterResource =>
-            val character = Character(name = resource.name,
-              description = resource.description,
-              photoUrl = resource.photoUrl)
+      mapToCharacterResource(request) {
+        resource: CharacterResource =>
+          val character = Character(name = resource.name,
+            description = resource.description,
+            photoUrl = resource.photoUrl)
 
-            if (characterRepo.find(character.id).nonEmpty || characterRepo.find(character.name).nonEmpty)
-              update(character)
-            else create(character)
-        }
+          if (characterRepo.find(character.id).nonEmpty || characterRepo.find(character.name).nonEmpty)
+            update(character)
+          else create(character)
       }
     }
   }
@@ -75,8 +70,7 @@ class CharacterController extends Controller {
 
   def deleteCharacter(id: Option[Long]) = BasicAuthAction {
     request => {
-      if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
-      else if (id.nonEmpty) {
+      if (id.nonEmpty) {
         if (characterRepo.delete(id.get)) Ok else NotFound
       } else {
         BadRequest
@@ -86,8 +80,7 @@ class CharacterController extends Controller {
 
   def findCharacter(id: Option[Long], name: Option[String]) = BasicAuthAction {
     request => {
-      if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
-      else if (request.queryString.count(x => x._1 != "id" && x._1 != "name") > 0) BadRequest
+      if (request.queryString.count(x => x._1 != "id" && x._1 != "name") > 0) BadRequest
       else if (id.isEmpty && name.isEmpty) BadRequest
       else if (id.isDefined && name.isDefined)
         findCharacterWithDoubleCriteria(id.get, name.get)
@@ -112,11 +105,8 @@ class CharacterController extends Controller {
 
   def findAllCharacters() = BasicAuthAction {
     request => {
-      if (!headerValidator.validate(request.headers)) BadRequest("Wrong Headers")
-      else {
-        val characters = characterRepo.findAll()
-        Ok(Json.toJson(characters))
-      }
+      val characters = characterRepo.findAll()
+      Ok(Json.toJson(characters))
     }
   }
 

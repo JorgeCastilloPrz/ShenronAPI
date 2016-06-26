@@ -45,6 +45,13 @@ trait DBUserRepositoryComponent extends UserRepositoryComponent
         Some(user)
       }
     }
+
+    override def create(user: User): User = {
+      val connection = connectToDatabase
+      connection.createStatement.executeUpdate(createUserQuery(user))
+      connection.close()
+      find(user.username, user.password).get
+    }
   }
 
 }
