@@ -14,6 +14,7 @@ Used cake pattern to provide dependencies statically (compile time).
 
 TODO
 ----
+* Test it. At least public calls.
 * Deploy to digital ocean VPS so people can start using it.
 
 Developed By
