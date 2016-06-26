@@ -48,7 +48,7 @@ Send the  following payload:
 ```
 If the name of the character is already stored in the database, no new character will be created. The found one will get updated with given data.
 
-Find character by Id or Name
+Find character by id or name
 ----------------------------
 * **[GET]** `{insert base url when deployed}/characters/?id=2`
 * **[GET]** `{insert base url when deployed}/characters/?name=goku`
@@ -67,7 +67,7 @@ Find all characters
 -------------------
 * **[GET]** `{insert base url when deployed}/characters/all`
 
-Characters on database will be returned with the following array format:
+Characters on database will be returned in the following array format:
 ```json
 [
   {
