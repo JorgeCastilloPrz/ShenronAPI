@@ -9,8 +9,79 @@ DragonBall characters rest API written in Scala using Play framework. Just a sim
 have some fun. Planning to create another project with the frontend using React Native :muscle:.
 
 Dependency Injection
---------------------
+====================
 Used cake pattern to provide dependencies statically (compile time).
+
+Usage
+=====
+To call the API endpoints you need to provide **encoded credentials**, as the
+API has **Basic authentication**. Encode `user:password` using **Base64** to get a string like
+the following one: `Basic am9yZ2bU6OdTU5yO12TY0--`. Include it in `Authorization` header
+for each call.
+
+To get your own credentials you will need to call the user creation endpoint at
+start.
+
+User creation
+-------------
+* **[POST]** `{insert base url when deployed}/users/create`
+
+Send the following payload:
+```json
+{
+    "username":"Jorge Castillo",
+    "password": "123456",
+}
+```
+Create or Update Characters
+---------------------------
+To create or update a character you must call the following endpoint
+* **[POST]** `{insert base url when deployed}/characters/create`
+
+Send the  following payload:
+```json
+{
+    "name":"Goku",
+    "description": "Sample description here",
+    "photoUrl": "http://images4.fanpop.com/image/photos/16200000/Goku-Super-Saiyan-3-Wallpaper-2-dragonball-z-movie-characters-16255435-1024-768.jpg"
+}
+```
+If the name of the character is already stored in the database, no new character will be created. The found one will get updated with given data.
+
+Find character by Id or Name
+----------------------------
+* **[GET]** `{insert base url when deployed}/characters/?id=2`
+* **[GET]** `{insert base url when deployed}/characters/?name=goku`
+
+The answer returned will be the details for the wanted character with the following format:
+```json
+{
+  "id": 2,
+  "name": "Goku",
+  "description": "Sample description here",
+  "photoUrl": "http://images4.fanpop.com/image/photos/16200000/Goku-Super-Saiyan-3-Wallpaper-2-dragonball-z-movie-characters-16255435-1024-768.jpg"
+}
+```
+
+Find all characters
+-------------------
+* **[GET]** `{insert base url when deployed}/characters/all`
+
+Characters on database will be returned with the following array format:
+```json
+[
+  {
+    "id": 2,
+    "name": "Goku",
+    "description": "Sample description here",
+    "photoUrl": "http://images4.fanpop.com/image/photos/16200000/Goku-Super-Saiyan-3-Wallpaper-2-dragonball-z-movie-characters-16255435-1024-768.jpg"
+  }
+]
+```
+
+Delete character
+----------------
+* **[DELETE]** `{insert base url when deployed}/characters/?id=91`
 
 TODO
 ----
