@@ -1,6 +1,6 @@
 package controllers.character
 
-import auth.BasicAuthAction
+import auth.BasicAuthActionComponent
 import main.scala.cake.CharacterRepositoryComponent
 import main.scala.controller.request.resource.CharacterResource
 import model.Character
@@ -19,12 +19,12 @@ import play.api.mvc._
   * @since 19/06/16
   */
 class CharacterController extends Controller {
-  self: CharacterRepositoryComponent =>
+  self: CharacterRepositoryComponent with BasicAuthActionComponent =>
 
   // Reads converters are used to convert from a JsValue to another type. You can combine and nest
   // Reads to create more complex ones. Here I am nesting reads to create a CharacterResource
 
-  implicit val characterReads: Reads[CharacterResource] = (
+  private implicit val characterReads: Reads[CharacterResource] = (
     (__ \ "name").read[String] and
       (__ \ "description").read[String] and
       (__ \ "photoUrl").read[String]
@@ -32,7 +32,7 @@ class CharacterController extends Controller {
 
   // Write converters are used to convert from any model type to JsValue
 
-  implicit val characterWrites = new Writes[Character] {
+  private implicit val characterWrites = new Writes[Character] {
     override def writes(character: Character): JsValue = {
       Json.obj(
         "id" -> character.id,
@@ -43,7 +43,7 @@ class CharacterController extends Controller {
     }
   }
 
-  def createOrUpdateCharacter = BasicAuthAction(BodyParsers.parse.json) {
+  def createOrUpdateCharacter = basicAuth(BodyParsers.parse.json) {
     implicit request => {
       mapToCharacterResource(request) {
         resource: CharacterResource =>
@@ -58,17 +58,17 @@ class CharacterController extends Controller {
     }
   }
 
-  def update(character: Character) = {
+  private def update(character: Character) = {
     characterRepo.update(character)
     Ok
   }
 
-  def create(character: Character) = {
+  private def create(character: Character) = {
     characterRepo.create(character)
     Created
   }
 
-  def deleteCharacter(id: Option[Long]) = BasicAuthAction {
+  def deleteCharacter(id: Option[Long]) = basicAuth {
     request => {
       if (id.nonEmpty) {
         if (characterRepo.delete(id.get)) Ok else NotFound
@@ -78,7 +78,7 @@ class CharacterController extends Controller {
     }
   }
 
-  def findCharacter(id: Option[Long], name: Option[String]) = BasicAuthAction {
+  def findCharacter(id: Option[Long] = Option.empty, name: Option[String] = Option.empty) = basicAuth {
     request => {
       if (request.queryString.count(x => x._1 != "id" && x._1 != "name") > 0) BadRequest
       else if (id.isEmpty && name.isEmpty) BadRequest
@@ -95,7 +95,7 @@ class CharacterController extends Controller {
     }
   }
 
-  def findCharacterWithDoubleCriteria(id: Long, name: String) = {
+  private def findCharacterWithDoubleCriteria(id: Long, name: String) = {
     val character = characterRepo.find(id);
     if (character.nonEmpty && character.get.name == name)
       Ok(Json.toJson(character))
@@ -103,16 +103,16 @@ class CharacterController extends Controller {
       NotFound("There are no characters available matching given conditions.")
   }
 
-  def findAllCharacters() = BasicAuthAction {
+  def findAllCharacters() = basicAuth {
     request => {
       val characters = characterRepo.findAll()
       Ok(Json.toJson(characters))
     }
   }
 
-  def mapToCharacterResource(request: Request[JsValue])
-                            (action: CharacterResource => Result)
-                            (implicit characterReads: Reads[CharacterResource]): Result =
+  private def mapToCharacterResource(request: Request[JsValue])
+                                    (action: CharacterResource => Result)
+                                    (implicit characterReads: Reads[CharacterResource]): Result =
     request.body.validate[CharacterResource](characterReads).fold(
       errors => BadRequest(Json.obj("errors" -> JsError.toJson(errors))),
       characterResource => {

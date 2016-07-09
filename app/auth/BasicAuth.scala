@@ -2,7 +2,7 @@ package auth
 
 import controllers.user.UserController
 import play.api.mvc.{Action, Request, Result}
-import repository.database.DBUserRepositoryComponent
+import repository.UserRepositoryComponent
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -11,8 +11,8 @@ import scala.concurrent.Future
   * @author jorge
   * @since 26/06/16
   */
-case class BasicAuth[A](action: Action[A]) extends Action[A]
-  with UserController with DBUserRepositoryComponent {
+class BasicAuth[A](action: Action[A]) extends Action[A] with UserController {
+  self: UserRepositoryComponent =>
 
   def apply(request: Request[A]): Future[Result] = {
     val authHeader = request.headers.get(BasicAuth.AUTHORIZATION)

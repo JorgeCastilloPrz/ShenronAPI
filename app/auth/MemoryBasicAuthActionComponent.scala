@@ -1,6 +1,9 @@
 package auth
 
-import play.api.mvc.{ActionBuilder, Request}
+import play.api.mvc.{Action, Request, Result}
+import repository.memory.MemoryUserRepositoryComponent
+
+import scala.concurrent.Future
 
 /**
   * @author jorge
@@ -8,9 +11,15 @@ import play.api.mvc.{ActionBuilder, Request}
   */
 trait MemoryBasicAuthActionComponent extends BasicAuthActionComponent {
 
-  val basicAuth = new MemoryAuthAction
+  override val basicAuth = new MemoryBasicAuthAction
 
-  class MemoryAuthAction {
+  class MemoryBasicAuthAction extends BasicAuthAction {
+    override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
+      block(request)
+    }
 
+    override def composeAction[A](action: Action[A]) =
+      new BasicAuth(action) with MemoryUserRepositoryComponent
   }
+
 }

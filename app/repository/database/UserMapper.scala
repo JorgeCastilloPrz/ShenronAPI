@@ -12,7 +12,7 @@ trait UserMapper {
 
   def mapUserFromResult(resultSet: ResultSet): User = {
     new User(
-      resultSet.getString("username"),
-      resultSet.getString("password"))
+      username = resultSet.getString("username"),
+      password = resultSet.getString("password"))
   }
 }
