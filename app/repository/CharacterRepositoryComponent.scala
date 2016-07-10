@@ -1,6 +1,7 @@
 package main.scala.cake
 
 import model.Character
+import repository.CharacterRepository
 
 /**
   * component to inject CharacterRepository.
@@ -11,20 +12,4 @@ import model.Character
 trait CharacterRepositoryComponent {
 
   val characterRepo: CharacterRepository
-
-  trait CharacterRepository {
-
-    def create(character: Character): Character
-
-    def update(character: Character): Character
-
-    def findAll(): List[Character]
-
-    def find(id: Long): Option[Character]
-
-    def find(name: String): Option[Character]
-
-    def delete(id: Long): Boolean
-  }
-
 }

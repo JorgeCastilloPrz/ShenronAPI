@@ -5,17 +5,24 @@ import java.util.concurrent.atomic.AtomicLong
 
 import main.scala.cake.CharacterRepositoryComponent
 import model.Character
+import repository.CharacterRepository
 
 /**
   * Implementation for the CharacterRepository component which provides a memory character
-  * repository.
+  * repository. Using a static shared instance to avoid reinstantiating repo for each BasicAuth
+  * action executed.
   *
   * @author jorge
   * @since 19/06/16
   */
 trait MemoryCharacterRepositoryComponent extends CharacterRepositoryComponent {
 
-  override val characterRepo = new MemoryCharacterRepository
+  override val characterRepo = MemoryCharacterRepositoryComponent.characterRepo
+}
+
+object MemoryCharacterRepositoryComponent extends CharacterRepositoryComponent {
+
+  val characterRepo = new MemoryCharacterRepository
 
   class MemoryCharacterRepository extends CharacterRepository {
 
@@ -51,5 +58,4 @@ trait MemoryCharacterRepositoryComponent extends CharacterRepositoryComponent {
       characters.values().find(_.name == name)
     }
   }
-
 }

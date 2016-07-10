@@ -7,7 +7,7 @@ import model.User
 import repository.{UserRepository, UserRepositoryComponent}
 
 /**
-  * Implementation for the CharacterRepository component which provides a memory character
+  * Implementation for the UserRepositoryComponent component which provides a memory user
   * repository. Using a static shared instance to avoid reinstantiating repo for each BasicAuth
   * action executed.
   *

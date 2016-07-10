@@ -6,6 +6,7 @@ import main.scala.cake.CharacterRepositoryComponent
 import model.Character
 import play.api.Play
 import play.api.Play.current
+import repository.CharacterRepository
 import utils.StreamExtensions
 
 /**
