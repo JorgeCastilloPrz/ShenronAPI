@@ -33,7 +33,7 @@ class BasicAuth[A](action: Action[A]) extends Action[A] with UserController {
     if (authenticate(username, password)) {
       action(request)
     } else {
-      return unauthorized
+      unauthorized
     }
   }
 

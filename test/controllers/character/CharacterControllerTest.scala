@@ -6,8 +6,8 @@ import akka.util.Timeout
 import auth.MemoryBasicAuthActionComponent
 import model.User
 import org.scalatestplus.play.PlaySpec
-import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Results._
+import play.api.mvc.{AnyContentAsEmpty, Headers}
 import play.api.test.{FakeHeaders, FakeRequest, Helpers}
 import repository.memory.{MemoryCharacterRepositoryComponent, MemoryUserRepositoryComponent}
 
@@ -25,16 +25,19 @@ class CharacterControllerTest extends PlaySpec {
     "return Unauthorized on not authenticated request" in {
       val controller = givenCharacterController
 
-      val result = controller.findCharacter(Option(10L), None)(fakeRequest)
+      val result = controller.findCharacter(None)(fakeRequest)
 
       Helpers.status(result) mustEqual Unauthorized.header.status
     }
 
-    "return BadRequest for on request without required parameters" in {
+    "return BadRequest on required parameters absence" in {
       val controller = givenCharacterController
       givenThereIsValidUser(controller)
 
-      val result = controller.findCharacter(None)(fakeRequest)
+      val result = controller.findCharacter(None)(
+        FakeRequest("GET", "/", fakeAuthorizationHeader(
+          CharacterControllerTest.ANY_USERNAME, CharacterControllerTest.ANY_PASSWORD),
+          AnyContentAsEmpty))
 
       Helpers.status(result) mustEqual BadRequest.header.status
     }
@@ -42,6 +45,16 @@ class CharacterControllerTest extends PlaySpec {
 
   private def fakeRequest: FakeRequest[AnyContentAsEmpty.type] = {
     FakeRequest("POST", "/", FakeHeaders(), AnyContentAsEmpty)
+  }
+
+  def fakeAuthorizationHeader(username: String, password: String): Headers = {
+    Headers.apply(("Authorization", encodeBasicAuth(username, password)));
+  }
+
+  def encodeBasicAuth(username: String, password: String): String = {
+    val encodedCredentials = new sun.misc.BASE64Encoder()
+      .encodeBuffer((username + ":" + password).getBytes())
+    "Basic " + encodedCredentials
   }
 
   private def givenCharacterController: CharacterController with MemoryCharacterRepositoryComponent with MemoryUserRepositoryComponent with MemoryBasicAuthActionComponent = {

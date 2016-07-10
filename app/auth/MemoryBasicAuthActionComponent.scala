@@ -14,7 +14,7 @@ trait MemoryBasicAuthActionComponent extends BasicAuthActionComponent {
   override val basicAuth = new MemoryBasicAuthAction
 
   class MemoryBasicAuthAction extends BasicAuthAction {
-    override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
+    override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
       block(request)
     }
 

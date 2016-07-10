@@ -5,7 +5,7 @@ import java.sql.{Connection, DriverManager}
 import model.User
 import play.api.Play
 import play.api.Play.current
-import repository.UserRepositoryComponent
+import repository.{UserRepository, UserRepositoryComponent}
 
 /**
   * Implementation for the CharacterRepository component which provides a persistence character
@@ -31,6 +31,13 @@ trait DBUserRepositoryComponent extends UserRepositoryComponent
       DriverManager.getConnection(url.get, user.get, password.get)
     }
 
+    override def create(user: User): User = {
+      val connection = connectToDatabase
+      connection.createStatement.executeUpdate(createUserQuery(user))
+      connection.close()
+      find(user.username, user.password).get
+    }
+
     override def find(username: String, password: String): Option[User] = {
       val connection = connectToDatabase
       val resultSet = connection.createStatement.executeQuery(findUserQuery(username, password))
@@ -44,13 +51,6 @@ trait DBUserRepositoryComponent extends UserRepositoryComponent
         connection.close()
         Some(user)
       }
-    }
-
-    override def create(user: User): User = {
-      val connection = connectToDatabase
-      connection.createStatement.executeUpdate(createUserQuery(user))
-      connection.close()
-      find(user.username, user.password).get
     }
   }
 
